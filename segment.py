@@ -95,8 +95,9 @@ def score(word, prev=None):
 def segment(text, segment_data, **kwargs):
     factor = kwargs.get('factor') if kwargs.get('factor') > 1 else 1
     global unigram_counts, total_count, bigram_counts
-    unigram_counts, bigram_counts = (change_data_values_to_float(segment_data,factor),) * 2
-    total_count = sum(unigram_counts.values())
+    if bool(unigram_counts) is False:
+        unigram_counts, bigram_counts = (change_data_values_to_float(segment_data,factor),) * 2
+        total_count = sum(unigram_counts.values())
     @memoize
     def search(text, prev='<S>'):
         if text == '':
