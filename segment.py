@@ -25,7 +25,7 @@ if sys.hexversion < 0x03000000:
 unigram_counts,bigram_counts, total_count = ("",) * 3
 
 def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size):
-  text =  codecs.open(input_file, 'r')
+  text        = codecs.open(input_file, 'r')
   word_counts = Counter([word.lower() for word in re.findall(r'\w+', text.read()) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
   with open(output_file, 'wb') as handle:
     pickle.dump(dict(word_counts), handle)
@@ -93,11 +93,11 @@ def score(word, prev=None):
             return score(word)
 
 def segment(text, segment_data, **kwargs):
-    factor = kwargs.get('factor') if kwargs.get('factor') > 1 else 1
+    factor                            = kwargs.get('factor') if kwargs.get('factor') > 1 else 1
     global unigram_counts, total_count, bigram_counts
     if bool(unigram_counts) is False:
         unigram_counts, bigram_counts = (change_data_values_to_float(segment_data,factor),) * 2
-        total_count = sum(unigram_counts.values())
+        total_count                   = sum(unigram_counts.values())
     @memoize
     def search(text, prev='<S>'):
         if text == '':
