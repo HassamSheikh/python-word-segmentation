@@ -39,7 +39,7 @@ def extract_metaphone_segmentation_file_from_text(input_file, output_file, min_s
   dump_into_pickle_file(output_file, word_counts)
 
 def metaphone_count(text, min_size, max_size):
-    return Counter([get_metaphone_from_word(word.lower()) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+    return Counter([get_metaphone_from_word(word) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
   
 def dump_into_pickle_file(output_file, word_counts):
     with open(output_file, 'wb') as handle:
