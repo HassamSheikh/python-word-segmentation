@@ -26,9 +26,12 @@ unigram_counts,bigram_counts, total_count = ("",) * 3
 
 def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size):
   text        = codecs.open(input_file, 'r')
-  word_counts = Counter([word.lower() for word in re.findall(r'\w+', text.read()) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+  word_counts = word_count(text.read(), min_size, max_size)
   with open(output_file, 'wb') as handle:
     pickle.dump(dict(word_counts), handle)
+
+def word_count(text, min_size, max_size):
+    return Counter([word.lower() for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
 
 def load_data_from_pickle_file(filename):
     with open(filename, 'rb') as handle:
