@@ -18,6 +18,7 @@ from collections import Counter
 import operator
 import codecs
 import pickle
+from metaphone import doublemetaphone
 
 if sys.hexversion < 0x03000000:
     range = xrange
@@ -25,18 +26,32 @@ if sys.hexversion < 0x03000000:
 unigram_counts,bigram_counts, total_count = ("",) * 3
 
 def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size):
-  text        = codecs.open(input_file, 'r')
-  word_counts = word_count(text.read(), min_size, max_size)
-  with open(output_file, 'wb') as handle:
-    pickle.dump(dict(word_counts), handle)
+  text        = codecs.open(input_file, 'r').read()
+  word_counts = word_count(text, min_size, max_size)
+  dump_into_pickle_file(output_file, word_counts)
 
 def word_count(text, min_size, max_size):
     return Counter([word.lower() for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+
+def extract_metaphone_segmentation_file_from_text(input_file, output_file, min_size, max_size):
+  text        = codecs.open(input_file, 'r').read()
+  word_counts = word_count(text, min_size, max_size)
+  dump_into_pickle_file(output_file, word_counts)
+
+def metaphone_count(text, min_size, max_size):
+    return Counter([get_metaphone_from_word(word.lower()) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+  
+def dump_into_pickle_file(output_file, word_counts):
+    with open(output_file, 'wb') as handle:
+        pickle.dump(dict(word_counts), handle)
 
 def load_data_from_pickle_file(filename):
     with open(filename, 'rb') as handle:
         words = pickle.load(handle)
     return words
+
+def get_metaphone_from_word(word):
+  return doublemetaphone(word)[0] if len(doublemetaphone(word)[0]) > 1 else doublemetaphone(word)[1]
 
 def load_data_from_text_file(filename):
     """Read `filename` and parse tab-separated file of (word, count) pairs."""
