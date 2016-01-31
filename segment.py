@@ -94,7 +94,7 @@ def set_segmentation_data(segment_data, **kwargs):
     total_count                   = sum(unigram_counts.values())
 
 def segment(text, **kwargs):
-    factor                            = kwargs.get('factor') if kwargs.get('factor') > 1 else 1
+    factor                        = kwargs.get('factor') if kwargs.get('factor') > 1 else 1
     if bool(unigram_counts) is False or 'segment_data' in kwargs:
         set_segmentation_data.kwargs.get('segment_data', factor = factor)
     
