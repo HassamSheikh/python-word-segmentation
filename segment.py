@@ -35,7 +35,7 @@ def word_count(text, min_size, max_size):
 
 def extract_metaphone_segmentation_file_from_text(input_file, output_file, min_size, max_size):
   text        = codecs.open(input_file, 'r').read()
-  word_counts = word_count(text, min_size, max_size)
+  word_counts = metaphone_count(text, min_size, max_size)
   dump_into_pickle_file(output_file, word_counts)
 
 def metaphone_count(text, min_size, max_size):
