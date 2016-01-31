@@ -25,26 +25,24 @@ if sys.hexversion < 0x03000000:
 
 unigram_counts,bigram_counts, total_count = ("",) * 3
 
-def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size):
-  text        = codecs.open(input_file, 'r').read()
-  word_counts = word_count(text, min_size, max_size)
-  dump_into_pickle_file(output_file, word_counts)
-
-def word_count(text, min_size, max_size):
-    return Counter([word.lower() for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
-
-def extract_metaphone_segmentation_file_from_text(input_file, output_file, min_size, max_size):
-  text        = codecs.open(input_file, 'r').read()
-  word_counts = metaphone_count(text, min_size, max_size)
-  dump_into_pickle_file(output_file, word_counts)
-
-def metaphone_count(text, min_size, max_size):
-    return Counter([get_metaphone_from_word(word) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+def read_text_for_segmentation_file(input_file):
+    return codecs.open(input_file, 'r').read().lower()
   
 def dump_into_pickle_file(output_file, word_counts):
     with open(output_file, 'wb') as handle:
         pickle.dump(dict(word_counts), handle)
 
+def word_count(text, min_size, max_size, flag):
+    return Counter([word_or_metaphone(word, flag) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
+
+def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size, **kwargs):
+    text          = read_text_for_segmentation_file(input_file)
+    word_counts   = word_count(text, min_size, max_size, True) if kwargs.get('metaphone') else word_count(text, min_size, max_size, False) 
+    dump_into_pickle_file(output_file, word_counts)
+
+def word_or_metaphone(word, flag):
+    return get_metaphone_from_word(word) if flag else word
+  
 def load_data_from_pickle_file(filename):
     with open(filename, 'rb') as handle:
         words = pickle.load(handle)
