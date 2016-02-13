@@ -27,6 +27,11 @@ unigram_counts,bigram_counts, total_count = ("",) * 3
 
 def read_text_for_segmentation_file(input_file):
     return codecs.open(input_file, 'r').read().lower()
+
+def read_pickle_for_segmentation_file(filename):
+    with open(filename, 'rb') as handle:
+        words = pickle.load(handle)
+    return map(str.lower, words)
   
 def dump_into_pickle_file(output_file, word_counts):
     with open(output_file, 'wb') as handle:
@@ -35,8 +40,7 @@ def dump_into_pickle_file(output_file, word_counts):
 def word_count(text, min_size, max_size, flag):
     return Counter([word_or_metaphone(word, flag) for word in re.findall(r'\w+', text) if (len(word) < (abs(max_size) + 1) and len(word) > (abs(min_size) - 1) and not unicode(word, 'utf-8').isnumeric())])
 
-def extract_segmentation_file_from_text(input_file, output_file, min_size, max_size, **kwargs):
-    text          = read_text_for_segmentation_file(input_file)
+def extract_segmentation_file_from_text(text, output_file, min_size, max_size, **kwargs):
     word_counts   = word_count(text, min_size, max_size, True) if kwargs.get('metaphone') else word_count(text, min_size, max_size, False) 
     dump_into_pickle_file(output_file, word_counts)
 
